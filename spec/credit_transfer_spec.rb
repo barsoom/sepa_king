@@ -106,7 +106,8 @@ RSpec.describe SEPA::CreditTransfer do
                             bban_proprietary:         'BGNR',
                             amount:                   102.50,
                             reference:                'XYZ-1234/123',
-                            remittance_information:   'Rechnung vom 22.08.2013'
+                            remittance_information:   'Rechnung vom 22.08.2013',
+                            purpose:                  'Test message'
 
         sct.to_xml(SEPA::PAIN_001_001_03)
       end
@@ -123,6 +124,10 @@ RSpec.describe SEPA::CreditTransfer do
       it 'should contain <ClrSysMmbId> with expected <MmbId> and <ClrSysId/Cd>' do
         expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/CdtTrfTxInf[1]/CdtrAgt/FinInstnId/ClrSysMmbId/MmbId', '9900')
         expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/CdtTrfTxInf[1]/CdtrAgt/FinInstnId/ClrSysMmbId/ClrSysId/Cd', 'SESBA')
+      end
+
+      it 'should contain <Purp> with expected <Prtry>' do
+        expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/CdtTrfTxInf[1]/Purp/Prtry', 'Test message')
       end
     end
 

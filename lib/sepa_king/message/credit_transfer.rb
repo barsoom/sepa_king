@@ -176,6 +176,14 @@ module SEPA
 
           end
         end
+
+        if transaction.purpose # short form advice
+          builder.Purp do
+            builder.Prtry(transaction.purpose)
+          end
+        end
+
+        # OCR could be added here
         if transaction.remittance_information
           builder.RmtInf do
             builder.Ustrd(transaction.remittance_information)
