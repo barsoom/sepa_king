@@ -71,4 +71,14 @@ RSpec.describe SEPA::CreditTransferTransaction do
       expect(SEPA::CreditTransferTransaction).not_to accept('', 'X' * 5, for: :category_purpose)
     end
   end
+
+  context 'Transaction Purpose: short message for creditor' do
+    it 'should allow valid value' do
+      expect(SEPA::CreditTransferTransaction).to accept(nil, 'hello', 'X' * 35, for: :purpose)
+    end
+
+    it 'should not allow invalid value' do
+      expect(SEPA::CreditTransferTransaction).not_to accept('', 'X' * 36, for: :purpose)
+    end
+  end
 end
