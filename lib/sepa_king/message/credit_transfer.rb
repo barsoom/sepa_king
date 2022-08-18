@@ -177,16 +177,30 @@ module SEPA
           end
         end
 
-        if transaction.purpose # short form advice
-          builder.Purp do
-            builder.Prtry(transaction.purpose)
-          end
-        end
-
-        # OCR could be added here
         if transaction.remittance_information
           builder.RmtInf do
             builder.Ustrd(transaction.remittance_information)
+          end
+        elsif transaction.structured_remittance_information # change to something international
+          builder.RmtInf do
+            builder.Strd do
+              builder.CdtrRefInf do
+                builder.Tp do
+                  builder.CdOrPrtry do
+                    if transaction.structured_remittance_information_code
+                      builder.Cd(transaction.structured_remittance_information_code)
+                    else
+                      builder.Prtry(transaction.structured_remittance_information)
+                    end
+                  end
+                end
+                builder.Ref(transaction.structured_remittance_information) if transaction.structured_remittance_information_code
+              end
+            end
+          end
+        elsif transaction.purpose
+          builder.Purp do
+            builder.Prtry(transaction.purpose)
           end
         end
       end
