@@ -20,16 +20,6 @@ RSpec.describe SEPA::Account do
     end
   end
 
-  describe :iban do
-    it 'should accept valid value' do
-      expect(SEPA::Account).to accept('DE21500500009876543210', 'PL61109010140000071219812874', for: :iban)
-    end
-
-    it 'should not accept invalid value' do
-      expect(SEPA::Account).not_to accept(nil, '', 'invalid', for: :iban)
-    end
-  end
-
   describe :bic do
     it 'should accept valid value' do
       expect(SEPA::Account).to accept('DEUTDEFF', 'DEUTDEFF500', 'SPUEDE2UXXX', for: :bic)

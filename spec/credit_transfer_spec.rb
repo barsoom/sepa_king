@@ -99,14 +99,14 @@ RSpec.describe SEPA::CreditTransfer do
       subject do
         sct = credit_transfer
 
-        sct.add_transaction name:                     'Telekomiker AG',
-                            bban:                     '123456',
-                            clearing_bank_identifier: '9900', # bankgiro
-                            clearing_code:            'SESBA',
-                            bban_proprietary:         'BGNR',
-                            amount:                   102.50,
-                            reference:                'XYZ-1234/123',
-                            remittance_information:   'Rechnung vom 22.08.2013'
+        sct.add_transaction name:                       'Telekomiker AG',
+                            account_number:             '123456',
+                            clearing_bank_identifier:   '9900', # bankgiro
+                            clearing_code:              'SESBA',
+                            account_number_proprietary: 'BGNR',
+                            amount:                     102.50,
+                            reference:                  'XYZ-1234/123',
+                            remittance_information:     'Rechnung vom 22.08.2013'
 
         sct.to_xml(SEPA::PAIN_001_001_03)
       end
@@ -131,7 +131,8 @@ RSpec.describe SEPA::CreditTransfer do
         sct = credit_transfer
 
         sct.add_transaction name:                     'Telekomiker AG',
-                            bban:                     '123456',
+                            account_number:           '123456',
+                            account_number_code:      'BBAN',
                             clearing_bank_identifier: '9960', # plusgiro
                             clearing_code:            'SESBA',
                             amount:                   102.50,
@@ -161,7 +162,8 @@ RSpec.describe SEPA::CreditTransfer do
         sct = credit_transfer
 
         sct.add_transaction name:                        'Telekomiker AG',
-                            bban:                        '123456',
+                            account_number:              '123456',
+                            account_number_code:         'BBAN',
                             amount:                      102.50,
                             reference:                   'XYZ-1234/123',
                             remittance_information:      'Rechnung vom 22.08.2013'
@@ -186,9 +188,9 @@ RSpec.describe SEPA::CreditTransfer do
                                        bic:  'BANKDEFFXXX',
                                        debtor_identifier: 'Debtor Identifier AG'
 
-        sct.add_transaction name:   'Telekomiker AG',
-                            bban:   '123456',
-                            amount: 102.50
+        sct.add_transaction name:           'Telekomiker AG',
+                            account_number: '123456',
+                            amount:         102.50
 
         sct.to_xml(SEPA::PAIN_001_001_03)
       end

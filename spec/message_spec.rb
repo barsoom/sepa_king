@@ -33,7 +33,7 @@ RSpec.describe SEPA::Message do
 
     it 'should fail with invalid account' do
       expect(subject).not_to be_valid
-      expect(subject.errors_on(:account).size).to eq(2)
+      expect(subject.errors_on(:account).size).to eq(1)
     end
 
     it 'should fail without transactions' do

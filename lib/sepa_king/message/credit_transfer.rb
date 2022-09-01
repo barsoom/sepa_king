@@ -56,7 +56,13 @@ module SEPA
           end
           builder.DbtrAcct do
             builder.Id do
-              builder.IBAN(group[:account].iban)
+              if group[:account].iban
+                builder.IBAN(group[:account].iban)
+              elsif group[:account].account_number
+                builder.Othr do
+                  builder.Id(group[:account].account_number)
+                end
+              end
             end
           end
           builder.DbtrAgt do
@@ -161,14 +167,16 @@ module SEPA
               builder.IBAN(transaction.iban)
             end
 
-            if transaction.bban
+            if transaction.account_number
               builder.Othr do
-                builder.Id(transaction.bban)
-                builder.SchmeNm do
-                  if transaction.bban_proprietary
-                    builder.Prtry(transaction.bban_proprietary)
-                  else
-                    builder.Cd("BBAN")
+                builder.Id(transaction.account_number)
+                if transaction.account_number_proprietary
+                  builder.SchmeNm do
+                    builder.Prtry(transaction.account_number_proprietary)
+                  end
+                elsif transaction.account_number_code
+                  builder.SchmeNm do
+                    builder.Cd(transaction.account_number_code)
                   end
                 end
               end
