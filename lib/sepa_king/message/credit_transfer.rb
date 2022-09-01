@@ -11,6 +11,7 @@ module SEPA
     # Find groups of transactions which share the same values of some attributes
     def transaction_group(transaction)
       { requested_date: transaction.requested_date,
+        local_instrument: transaction.local_instrument,
         batch_booking: transaction.batch_booking,
         service_level: transaction.service_level,
         category_purpose: transaction.category_purpose,
@@ -37,6 +38,11 @@ module SEPA
             if group[:category_purpose]
               builder.CtgyPurp do
                 builder.Cd(group[:category_purpose])
+              end
+            end
+            if group[:local_instrument]
+              builder.LclInstrm do
+                builder.Prtry(group[:local_instrument])
               end
             end
           end

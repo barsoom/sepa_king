@@ -6,7 +6,6 @@ module SEPA
 
     attr_accessor :mandate_id,
                   :mandate_date_of_signature,
-                  :local_instrument,
                   :sequence_type,
                   :creditor_account,
                   :original_debtor_account,
