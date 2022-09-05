@@ -195,7 +195,7 @@ module SEPA
           builder.RmtInf do
             builder.Ustrd(transaction.remittance_information)
           end
-        elsif transaction.structured_remittance_information # change to something international
+        elsif transaction.structured_remittance_information
           builder.RmtInf do
             builder.Strd do
               builder.CdtrRefInf do
