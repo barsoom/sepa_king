@@ -37,7 +37,7 @@ RSpec.describe SEPA::CreditTransfer do
     context 'for invalid debtor' do
       it 'should fail' do
         expect {
-          SEPA::CreditTransfer.new.to_xml
+          SEPA::CreditTransfer.new(name: '').to_xml
         }.to raise_error(SEPA::Error, /Name is too short/)
       end
     end

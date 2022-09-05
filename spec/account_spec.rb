@@ -16,7 +16,7 @@ RSpec.describe SEPA::Account do
     end
 
     it 'should not accept invalid value' do
-      expect(SEPA::Account).not_to accept(nil, '', 'X' * 71, for: :name)
+      expect(SEPA::Account).not_to accept('', 'X' * 71, for: :name)
     end
   end
 

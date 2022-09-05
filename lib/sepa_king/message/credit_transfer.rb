@@ -48,7 +48,7 @@ module SEPA
           end
           builder.ReqdExctnDt(group[:requested_date].iso8601)
           builder.Dbtr do
-            builder.Nm(group[:account].name)
+            builder.Nm(group[:account].name) if group[:account].name
             builder.Id do
               builder.OrgId do
                 builder.Othr do
@@ -118,7 +118,7 @@ module SEPA
               builder.ClrSysMmbId do
                 builder.ClrSysId do
                   builder.Cd(transaction.clearing_code)
-                end
+                end if transaction.clearing_code
                 builder.MmbId(transaction.clearing_bank_identifier)
               end
             end
