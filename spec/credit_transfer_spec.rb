@@ -37,7 +37,7 @@ RSpec.describe SEPA::CreditTransfer do
     context 'for invalid debtor' do
       it 'should fail' do
         expect {
-          SEPA::CreditTransfer.new.to_xml
+          SEPA::CreditTransfer.new(name: '').to_xml
         }.to raise_error(SEPA::Error, /Name is too short/)
       end
     end
@@ -99,15 +99,14 @@ RSpec.describe SEPA::CreditTransfer do
       subject do
         sct = credit_transfer
 
-        sct.add_transaction name:                     'Telekomiker AG',
-                            bban:                     '123456',
-                            clearing_bank_identifier: '9900', # bankgiro
-                            clearing_code:            'SESBA',
-                            bban_proprietary:         'BGNR',
-                            amount:                   102.50,
-                            reference:                'XYZ-1234/123',
-                            remittance_information:   'Rechnung vom 22.08.2013',
-                            purpose:                  'Test message'
+        sct.add_transaction name:                       'Telekomiker AG',
+                            account_number:             '123456',
+                            clearing_bank_identifier:   '9900', # bankgiro
+                            clearing_code:              'SESBA',
+                            account_number_proprietary: 'BGNR',
+                            amount:                     102.50,
+                            reference:                  'XYZ-1234/123',
+                            remittance_information:     'Rechnung vom 22.08.2013'
 
         sct.to_xml(SEPA::PAIN_001_001_03)
       end
@@ -125,10 +124,6 @@ RSpec.describe SEPA::CreditTransfer do
         expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/CdtTrfTxInf[1]/CdtrAgt/FinInstnId/ClrSysMmbId/MmbId', '9900')
         expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/CdtTrfTxInf[1]/CdtrAgt/FinInstnId/ClrSysMmbId/ClrSysId/Cd', 'SESBA')
       end
-
-      it 'should contain <Purp> with expected <Prtry>' do
-        expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/CdtTrfTxInf[1]/Purp/Prtry', 'Test message')
-      end
     end
 
     context 'with a plusgiro creditor account' do
@@ -136,7 +131,8 @@ RSpec.describe SEPA::CreditTransfer do
         sct = credit_transfer
 
         sct.add_transaction name:                     'Telekomiker AG',
-                            bban:                     '123456',
+                            account_number:           '123456',
+                            account_number_code:      'BBAN',
                             clearing_bank_identifier: '9960', # plusgiro
                             clearing_code:            'SESBA',
                             amount:                   102.50,
@@ -166,7 +162,8 @@ RSpec.describe SEPA::CreditTransfer do
         sct = credit_transfer
 
         sct.add_transaction name:                        'Telekomiker AG',
-                            bban:                        '123456',
+                            account_number:              '123456',
+                            account_number_code:         'BBAN',
                             amount:                      102.50,
                             reference:                   'XYZ-1234/123',
                             remittance_information:      'Rechnung vom 22.08.2013'
@@ -191,9 +188,9 @@ RSpec.describe SEPA::CreditTransfer do
                                        bic:  'BANKDEFFXXX',
                                        debtor_identifier: 'Debtor Identifier AG'
 
-        sct.add_transaction name:   'Telekomiker AG',
-                            bban:   '123456',
-                            amount: 102.50
+        sct.add_transaction name:           'Telekomiker AG',
+                            account_number: '123456',
+                            amount:         102.50
 
         sct.to_xml(SEPA::PAIN_001_001_03)
       end
@@ -226,12 +223,6 @@ RSpec.describe SEPA::CreditTransfer do
 
         it 'should create valid XML file' do
           expect(subject.to_xml(SEPA::PAIN_001_003_03)).to validate_against('pain.001.003.03.xsd')
-        end
-
-        it 'should fail for pain.001.001.03' do
-          expect {
-            subject.to_xml(SEPA::PAIN_001_001_03)
-          }.to raise_error(SEPA::Error, /Incompatible with schema/)
         end
 
         it 'should fail for pain.001.002.03' do
@@ -554,6 +545,73 @@ RSpec.describe SEPA::CreditTransfer do
 
         it 'should validate against pain.001.003.03' do
           expect(subject.to_xml(SEPA::PAIN_001_003_03)).to validate_against('pain.001.003.03.xsd')
+        end
+      end
+
+      context "with structured long form reference" do
+        context "with reference code" do
+          subject do
+            sct = credit_transfer
+
+            sct.add_transaction name:                                         'Telekomiker AG',
+                                iban:                                         'DE37112589611964645802',
+                                amount:                                        102.50,
+                                structured_remittance_information:            '789456',
+                                structured_remittance_information_code:       'SCOR'
+
+            sct.to_xml(SEPA::PAIN_001_001_03)
+          end
+
+          it 'should validate against pain.001.001.03' do
+            expect(subject).to validate_against('pain.001.001.03.xsd')
+          end
+
+          it 'should contain <CdtrRefInf> with expected <Ref> and <Tp/CdOrPrtry/Cd>' do
+            expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/CdtTrfTxInf[1]/RmtInf/Strd/CdtrRefInf/Ref', '789456')
+            expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/CdtTrfTxInf[1]/RmtInf/Strd/CdtrRefInf/Tp/CdOrPrtry/Cd', 'SCOR')
+          end
+        end
+
+        context "without reference code" do
+          subject do
+            sct = credit_transfer
+
+            sct.add_transaction name:                                         'Telekomiker AG',
+                                iban:                                         'DE37112589611964645802',
+                                amount:                                        102.50,
+                                structured_remittance_information:            '789456'
+
+            sct.to_xml(SEPA::PAIN_001_001_03)
+          end
+
+          it 'should validate against pain.001.001.03' do
+            expect(subject).to validate_against('pain.001.001.03.xsd')
+          end
+
+          it 'should contain <CdtrRefInf> with expected <Tp/CdOrPrtry/Prtry>' do
+            expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/CdtTrfTxInf[1]/RmtInf/Strd/CdtrRefInf/Tp/CdOrPrtry/Prtry', '789456')
+          end
+        end
+      end
+
+      context "with short form reference" do
+        subject do
+          sct = credit_transfer
+
+          sct.add_transaction name:                     'Telekomiker AG',
+                              iban:                     'DE37112589611964645802',
+                              amount:                   102.50,
+                              purpose:                  'Test message'
+
+          sct.to_xml(SEPA::PAIN_001_001_03)
+        end
+
+        it 'should validate against pain.001.001.03' do
+          expect(subject).to validate_against('pain.001.001.03.xsd')
+        end
+
+        it 'should contain <Purp> with expected <Prtry>' do
+          expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/CdtTrfTxInf[1]/Purp/Prtry', 'Test message')
         end
       end
     end

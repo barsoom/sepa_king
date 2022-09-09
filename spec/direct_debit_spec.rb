@@ -69,7 +69,7 @@ RSpec.describe SEPA::DirectDebit do
     context 'for invalid creditor' do
       it 'should fail' do
         expect {
-          SEPA::DirectDebit.new.to_xml
+          SEPA::DirectDebit.new(name: '').to_xml
         }.to raise_error(SEPA::Error, /Name is too short/)
       end
     end

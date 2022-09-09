@@ -11,6 +11,7 @@ module SEPA
     # Find groups of transactions which share the same values of some attributes
     def transaction_group(transaction)
       { requested_date: transaction.requested_date,
+        local_instrument: transaction.local_instrument,
         batch_booking: transaction.batch_booking,
         service_level: transaction.service_level,
         category_purpose: transaction.category_purpose,
@@ -39,10 +40,15 @@ module SEPA
                 builder.Cd(group[:category_purpose])
               end
             end
+            if group[:local_instrument]
+              builder.LclInstrm do
+                builder.Prtry(group[:local_instrument])
+              end
+            end
           end
           builder.ReqdExctnDt(group[:requested_date].iso8601)
           builder.Dbtr do
-            builder.Nm(group[:account].name)
+            builder.Nm(group[:account].name) if group[:account].name
             builder.Id do
               builder.OrgId do
                 builder.Othr do
@@ -56,7 +62,13 @@ module SEPA
           end
           builder.DbtrAcct do
             builder.Id do
-              builder.IBAN(group[:account].iban)
+              if group[:account].iban
+                builder.IBAN(group[:account].iban)
+              elsif group[:account].account_number
+                builder.Othr do
+                  builder.Id(group[:account].account_number)
+                end
+              end
             end
           end
           builder.DbtrAgt do
@@ -106,7 +118,7 @@ module SEPA
               builder.ClrSysMmbId do
                 builder.ClrSysId do
                   builder.Cd(transaction.clearing_code)
-                end
+                end if transaction.clearing_code
                 builder.MmbId(transaction.clearing_bank_identifier)
               end
             end
@@ -161,14 +173,16 @@ module SEPA
               builder.IBAN(transaction.iban)
             end
 
-            if transaction.bban
+            if transaction.account_number
               builder.Othr do
-                builder.Id(transaction.bban)
-                builder.SchmeNm do
-                  if transaction.bban_proprietary
-                    builder.Prtry(transaction.bban_proprietary)
-                  else
-                    builder.Cd("BBAN")
+                builder.Id(transaction.account_number)
+                if transaction.account_number_proprietary
+                  builder.SchmeNm do
+                    builder.Prtry(transaction.account_number_proprietary)
+                  end
+                elsif transaction.account_number_code
+                  builder.SchmeNm do
+                    builder.Cd(transaction.account_number_code)
                   end
                 end
               end
@@ -177,16 +191,30 @@ module SEPA
           end
         end
 
-        if transaction.purpose # short form advice
-          builder.Purp do
-            builder.Prtry(transaction.purpose)
-          end
-        end
-
-        # OCR could be added here
         if transaction.remittance_information
           builder.RmtInf do
             builder.Ustrd(transaction.remittance_information)
+          end
+        elsif transaction.structured_remittance_information
+          builder.RmtInf do
+            builder.Strd do
+              builder.CdtrRefInf do
+                builder.Tp do
+                  builder.CdOrPrtry do
+                    if transaction.structured_remittance_information_code
+                      builder.Cd(transaction.structured_remittance_information_code)
+                    else
+                      builder.Prtry(transaction.structured_remittance_information)
+                    end
+                  end
+                end
+                builder.Ref(transaction.structured_remittance_information) if transaction.structured_remittance_information_code
+              end
+            end
+          end
+        elsif transaction.purpose
+          builder.Purp do
+            builder.Prtry(transaction.purpose)
           end
         end
       end
