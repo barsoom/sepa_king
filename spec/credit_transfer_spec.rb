@@ -714,5 +714,37 @@ RSpec.describe SEPA::CreditTransfer do
         end
       end
     end
+
+    context 'local instrument' do
+      let(:credit_transfer) { SEPA::CreditTransfer.new name: 'Schuldner GmbH', iban: 'DE37112589611964645802'}
+      it "should not contain a LclInstrm element if no local_instrument is given" do
+        credit_transfer.add_transaction(credit_transfer_transaction)
+
+        expect(credit_transfer.to_xml(SEPA::PAIN_001_001_03)).not_to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/PmtTpInf/LclInstrm')
+      end
+
+      it "should use the given local_instrument as Prtry if local_instrument is given but local_instrument_key isn't" do
+        credit_transfer.add_transaction(credit_transfer_transaction.merge(local_instrument: 'CH01'))
+        expect(credit_transfer.to_xml(SEPA::PAIN_001_001_03)).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/PmtTpInf/LclInstrm/Prtry', 'CH01')
+      end
+
+      it "should use the given local_instrument_key as Prtry if local_instrument_key is given and local_instrument_key is Prtry" do
+        credit_transfer.add_transaction(credit_transfer_transaction.merge(
+          local_instrument: 'CH01',
+          local_instrument_key: 'Prtry'
+        ))
+
+        expect(credit_transfer.to_xml(SEPA::PAIN_001_001_03)).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/PmtTpInf/LclInstrm/Prtry', 'CH01')
+      end
+
+      it "should use the given local_instrument_key as Cd if local_instrument_key is given and local_instrument_key is Cd" do
+        credit_transfer.add_transaction(credit_transfer_transaction.merge(
+          local_instrument: 'CH01',
+          local_instrument_key: 'Cd'
+        ))
+
+        expect(credit_transfer.to_xml(SEPA::PAIN_001_001_03)).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/PmtTpInf/LclInstrm/Cd', 'CH01')
+      end
+    end
   end
 end

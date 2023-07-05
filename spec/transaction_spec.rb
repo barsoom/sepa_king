@@ -131,4 +131,14 @@ RSpec.describe SEPA::Transaction do
       expect(SEPA::Transaction).not_to accept('', 'EURO', 'ABCDEF', for: :currency)
     end
   end
+
+  context 'local_instrument_key' do
+    it 'should allow valid values' do
+      expect(SEPA::Transaction).to accept('Prtry', 'Cd', for: :local_instrument_key)
+    end
+
+    it 'should reject invalid values' do
+      expect(SEPA::Transaction).not_to accept('', 'ABCDEF', for: :local_instrument_key)
+    end
+  end
 end

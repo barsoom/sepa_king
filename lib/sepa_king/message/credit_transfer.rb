@@ -12,6 +12,7 @@ module SEPA
     def transaction_group(transaction)
       { requested_date: transaction.requested_date,
         local_instrument: transaction.local_instrument,
+        local_instrument_key: transaction.local_instrument_key,
         batch_booking: transaction.batch_booking,
         service_level: transaction.service_level,
         category_purpose: transaction.category_purpose,
@@ -42,7 +43,11 @@ module SEPA
             end
             if group[:local_instrument]
               builder.LclInstrm do
-                builder.Prtry(group[:local_instrument])
+                if group[:local_instrument_key] == "Cd"
+                  builder.Cd(group[:local_instrument])
+                else
+                  builder.Prtry(group[:local_instrument])
+                end
               end
             end
           end
