@@ -7,7 +7,8 @@ module SEPA
                   :debtor_account,
                   :purpose,
                   :structured_remittance_information,
-                  :structured_remittance_information_code
+                  :structured_remittance_information_code,
+                  :charge_bearer
 
     validates_inclusion_of :service_level, :in => %w(SEPA URGP), :allow_nil => true
     validates_inclusion_of :structured_remittance_information_code, in: %w(RADM RPIN FXDR DISP PUOR SCOR), allow_nil: true
@@ -26,6 +27,9 @@ module SEPA
     def initialize(attributes = {})
       super
       self.service_level ||= 'SEPA' if self.currency == 'EUR'
+      if service_level
+        self.charge_bearer ||= 'SLEV'
+      end
     end
 
     def schema_compatible?(schema_name)

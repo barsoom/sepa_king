@@ -616,6 +616,65 @@ RSpec.describe SEPA::CreditTransfer do
       end
     end
 
+    context '#charge_bearer' do
+      let(:format) { SEPA::PAIN_001_001_03 }
+      subject { credit_transfer.to_xml(format) }
+
+      before do
+        credit_transfer.add_transaction(transaction)
+      end
+
+      context 'with a specified charge bearer' do
+        let(:transaction) do
+          {
+            name: 'Telekomiker AG',
+            iban: 'DE37112589611964645802',
+            bic: 'PBNKDEFF370',
+            amount: 102.50,
+            currency: 'CHF',
+            charge_bearer: 'SHAR',
+          }
+        end
+
+        it 'contains the specified ChrgBr' do
+          expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/ChrgBr', 'SHAR')
+        end
+      end
+
+      context 'with the default charge bearer and in service_level SEPA (EUR)' do
+        let(:transaction) do
+          {
+            name: 'Telekomiker AG',
+            iban: 'DE37112589611964645802',
+            bic: 'PBNKDEFF370',
+            amount: 102.50,
+            currency: 'EUR',
+          }
+        end
+
+        it 'contains the SLEV ChrgBr' do
+          expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/ChrgBr', 'SLEV')
+        end
+      end
+
+      context 'with a specified charge bearer and in service_level SEPA (EUR)' do
+        let(:transaction) do
+          {
+            name: 'Telekomiker AG',
+            iban: 'DE37112589611964645802',
+            bic: 'PBNKDEFF370',
+            amount: 102.50,
+            currency: 'EUR',
+            charge_bearer: 'SHAR',
+          }
+        end
+
+        it 'contains the SHAR ChrgBr' do
+          expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/ChrgBr', 'SHAR')
+        end
+      end
+    end
+
     context 'xml_schema_header' do
       subject { credit_transfer.to_xml(format) }
 
