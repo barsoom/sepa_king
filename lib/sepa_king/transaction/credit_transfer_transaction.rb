@@ -35,6 +35,10 @@ module SEPA
       end
     end
 
+    def use_equivalent_amount?
+      destination_currency && destination_currency != currency
+    end
+
     def schema_compatible?(schema_name)
       case schema_name
       when PAIN_001_001_03

@@ -700,6 +700,24 @@ RSpec.describe SEPA::CreditTransfer do
           expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/CdtTrfTxInf[1]/Amt/EqvtAmt/CcyOfTrf', 'EUR')
         end
       end
+
+      context 'with a destination_currency the same as the currency' do
+        let(:transaction) do
+          {
+            name: 'Telekomiker AG',
+            iban: 'DE37112589611964645802',
+            bic: 'PBNKDEFF370',
+            amount: 102.50,
+            currency: 'EUR',
+            destination_currency: 'EUR'
+          }
+        end
+
+        it 'does not contain an "equivalent amount"' do
+          expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/CdtTrfTxInf[1]/Amt/InstdAmt')
+          expect(subject).not_to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/CdtTrfTxInf[1]/Amt/EqvtAmt')
+        end
+      end
     end
 
     context 'xml_schema_header' do
