@@ -81,4 +81,14 @@ RSpec.describe SEPA::CreditTransferTransaction do
       expect(SEPA::CreditTransferTransaction).not_to accept('', 'X' * 36, for: :purpose)
     end
   end
+
+  context 'Charge Bearer' do
+    it 'should allow valid value' do
+      expect(SEPA::CreditTransferTransaction).to accept('CRED', 'DEBT', 'SHAR', 'SLEV', for: :charge_bearer)
+    end
+
+    it 'should not allow invalid value' do
+      expect(SEPA::CreditTransferTransaction).to accept('FOO', '', 'BAR', for: :charge_bearer)
+    end
+  end
 end

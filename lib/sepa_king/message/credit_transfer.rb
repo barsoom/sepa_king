@@ -16,7 +16,8 @@ module SEPA
         batch_booking: transaction.batch_booking,
         service_level: transaction.service_level,
         category_purpose: transaction.category_purpose,
-        account: transaction.debtor_account || account
+        account: transaction.debtor_account || account,
+        charge_bearer: transaction.charge_bearer,
       }
     end
 
@@ -87,8 +88,8 @@ module SEPA
               end
             end
           end
-          if group[:service_level]
-            builder.ChrgBr('SLEV')
+          if group[:charge_bearer]
+            builder.ChrgBr(group[:charge_bearer])
           end
 
           transactions.each do |transaction|
