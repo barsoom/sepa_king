@@ -675,6 +675,33 @@ RSpec.describe SEPA::CreditTransfer do
       end
     end
 
+    context '#destination_currency' do
+      let(:format) { SEPA::PAIN_001_001_03 }
+      subject { credit_transfer.to_xml(format) }
+
+      before do
+        credit_transfer.add_transaction(transaction)
+      end
+
+      context 'with a destination_currency' do
+        let(:transaction) do
+          {
+            name: 'Telekomiker AG',
+            iban: 'DE37112589611964645802',
+            bic: 'PBNKDEFF370',
+            amount: 102.50,
+            currency: 'CHF',
+            destination_currency: 'EUR'
+          }
+        end
+
+        it 'contains the specified "destination currency" in <CcyOfTrf>' do
+          expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/CdtTrfTxInf[1]/Amt/EqvtAmt/Amt[@Ccy="CHF"]', '102.50')
+          expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/CdtTrfTxInf[1]/Amt/EqvtAmt/CcyOfTrf', 'EUR')
+        end
+      end
+    end
+
     context 'xml_schema_header' do
       subject { credit_transfer.to_xml(format) }
 

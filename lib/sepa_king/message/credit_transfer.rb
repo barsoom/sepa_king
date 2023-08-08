@@ -108,7 +108,14 @@ module SEPA
           builder.EndToEndId(transaction.reference)
         end
         builder.Amt do
-          builder.InstdAmt('%.2f' % transaction.amount, Ccy: transaction.currency)
+          if transaction.destination_currency
+            builder.EqvtAmt do
+              builder.Amt('%.2f' % transaction.amount, Ccy: transaction.currency)
+              builder.CcyOfTrf(transaction.destination_currency)
+            end
+          else
+            builder.InstdAmt('%.2f' % transaction.amount, Ccy: transaction.currency)
+          end
         end
         if transaction.bic
           builder.CdtrAgt do
