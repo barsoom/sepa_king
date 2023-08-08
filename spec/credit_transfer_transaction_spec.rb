@@ -91,4 +91,14 @@ RSpec.describe SEPA::CreditTransferTransaction do
       expect(SEPA::CreditTransferTransaction).not_to accept('FOO', '', 'BAR', for: :charge_bearer)
     end
   end
+
+  context 'destination_currency' do
+    it 'should allow valid value' do
+      expect(SEPA::CreditTransferTransaction).to accept(nil, 'EUR', 'CHF', 'USD', for: :destination_currency)
+    end
+
+    it 'should not allow invalid value' do
+      expect(SEPA::CreditTransferTransaction).not_to accept('', 'FOOP', 'BARP', for: :destination_currency)
+    end
+  end
 end

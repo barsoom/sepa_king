@@ -8,7 +8,8 @@ module SEPA
                   :purpose,
                   :structured_remittance_information,
                   :structured_remittance_information_code,
-                  :charge_bearer
+                  :charge_bearer,
+                  :destination_currency
 
     validates_inclusion_of :service_level, :in => %w(SEPA URGP), :allow_nil => true
     validates_inclusion_of :structured_remittance_information_code, in: %w(RADM RPIN FXDR DISP PUOR SCOR), allow_nil: true
@@ -16,6 +17,7 @@ module SEPA
     validates_length_of :category_purpose, within: 1..4, allow_nil: true
     validates_length_of :purpose, within: 1..35, allow_nil: true
     validates_length_of :structured_remittance_information, within: 1..35, allow_nil: true
+    validates_length_of :destination_currency, is: 3, allow_nil: true
 
     validate do |t|
       t.validate_requested_date_after(Date.today)
