@@ -12,6 +12,7 @@ module SEPA
 
     validates_inclusion_of :service_level, :in => %w(SEPA URGP), :allow_nil => true
     validates_inclusion_of :structured_remittance_information_code, in: %w(RADM RPIN FXDR DISP PUOR SCOR), allow_nil: true
+    validates_inclusion_of :charge_bearer, in: %w(CRED DEBT SHAR SLEV), allow_nil: true
     validates_length_of :category_purpose, within: 1..4, allow_nil: true
     validates_length_of :purpose, within: 1..35, allow_nil: true
     validates_length_of :structured_remittance_information, within: 1..35, allow_nil: true

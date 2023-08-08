@@ -88,7 +88,7 @@ RSpec.describe SEPA::CreditTransferTransaction do
     end
 
     it 'should not allow invalid value' do
-      expect(SEPA::CreditTransferTransaction).to accept('FOO', '', 'BAR', for: :charge_bearer)
+      expect(SEPA::CreditTransferTransaction).not_to accept('FOO', '', 'BAR', for: :charge_bearer)
     end
   end
 end
