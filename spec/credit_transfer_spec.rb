@@ -655,6 +655,10 @@ RSpec.describe SEPA::CreditTransfer do
         it 'contains the SLEV ChrgBr' do
           expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/ChrgBr', 'SLEV')
         end
+
+        it 'contains the SEPA service level code' do
+          expect(subject).to have_xml('//PmtInf/PmtTpInf/SvcLvl/Cd', 'SEPA')
+        end
       end
 
       context 'with a specified charge bearer and in service_level SEPA (EUR)' do
@@ -671,6 +675,10 @@ RSpec.describe SEPA::CreditTransfer do
 
         it 'contains the SHAR ChrgBr' do
           expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/ChrgBr', 'SHAR')
+        end
+
+        it 'contains the SEPA service level code' do
+          expect(subject).to have_xml('//PmtInf/PmtTpInf/SvcLvl/Cd', 'SEPA')
         end
       end
     end

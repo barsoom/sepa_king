@@ -29,8 +29,8 @@ module SEPA
 
     def initialize(attributes = {})
       super
-      self.service_level ||= 'SEPA' if self.currency == 'EUR'
-      if service_level
+      self.service_level ||= 'SEPA' if self.currency == 'EUR' || use_equivalent_amount?
+      if service_level && !use_equivalent_amount?
         self.charge_bearer ||= 'SLEV'
       end
     end
@@ -42,7 +42,7 @@ module SEPA
     def schema_compatible?(schema_name)
       case schema_name
       when PAIN_001_001_03
-        !self.service_level || (self.service_level == 'SEPA' && self.currency == 'EUR')
+        !self.service_level || (self.service_level == 'SEPA' && self.currency == 'EUR') || use_equivalent_amount?
       when PAIN_001_002_03
         self.bic.present? && self.service_level == 'SEPA' && self.currency == 'EUR'
       when PAIN_001_003_03

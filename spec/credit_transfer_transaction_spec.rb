@@ -42,6 +42,7 @@ RSpec.describe SEPA::CreditTransferTransaction do
       it 'should succeed for valid attributes' do
         expect(SEPA::CreditTransferTransaction.new(:bic => 'SPUEDE2UXXX', :currency => 'CHF')).to be_schema_compatible('pain.001.001.03')
         expect(SEPA::CreditTransferTransaction.new(:bic => nil)).to be_schema_compatible('pain.001.003.03')
+        expect(SEPA::CreditTransferTransaction.new(:bic => "SPUEDE2UXXX", :service_level => 'SEPA')).to be_schema_compatible('pain.001.001.03')
       end
     end
 
