@@ -144,7 +144,7 @@ module SEPA
               builder.Othr do
                 builder.Id(account.identifier)
                 builder.SchmeNm do
-                  builder.Cd('CUST')
+                  builder.Cd(account.initiating_party_org_id_other_scheme_name_code)
                 end
               end
             end

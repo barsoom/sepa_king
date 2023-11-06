@@ -29,4 +29,18 @@ RSpec.describe SEPA::Account do
       expect(SEPA::Account).not_to accept('', 'invalid', for: :bic)
     end
   end
+
+  describe '#initiating_party_org_id_other_scheme_name_code' do
+    it 'should accept valid value' do
+      expect(SEPA::Account).to accept('B', 'BA', 'BAN', 'BANK', for: :initiating_party_org_id_other_scheme_name_code)
+    end
+
+    it 'should not accept invalid value' do
+      expect(SEPA::Account).not_to accept('BANKZ', '', for: :initiating_party_org_id_other_scheme_name_code)
+    end
+
+    it 'returns CUST if not set' do
+      expect(described_class.new.initiating_party_org_id_other_scheme_name_code).to eq('CUST')
+    end
+  end
 end

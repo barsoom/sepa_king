@@ -182,11 +182,14 @@ RSpec.describe SEPA::CreditTransfer do
     end
 
     context 'with debtor identifier' do
+      let(:scheme_nm_attributes) { {} }
+
       subject do
         sct = SEPA::CreditTransfer.new name: 'Schuldner GmbH',
                                        iban: 'DE87200500001234567890',
                                        bic:  'BANKDEFFXXX',
-                                       debtor_identifier: 'Debtor Identifier AG'
+                                       debtor_identifier: 'Debtor Identifier AG',
+                                       **scheme_nm_attributes
 
         sct.add_transaction name:           'Telekomiker AG',
                             account_number: '123456',
@@ -202,6 +205,14 @@ RSpec.describe SEPA::CreditTransfer do
       it 'should contain <GrpHdr/InitgPty/Id/OrgId/Othr> with expected <Id> and <SchmeNm/Cd>' do
         expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/GrpHdr/InitgPty/Id/OrgId/Othr/SchmeNm/Cd', 'CUST')
         expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/GrpHdr/InitgPty/Id/OrgId/Othr/Id', 'Debtor Identifier AG')
+      end
+
+      context 'when the SchemeNm is also configured' do
+        let(:scheme_nm_attributes) { { initiating_party_org_id_other_scheme_name_code: 'QUUZ' } }
+
+        it 'should render the SchemeNm' do
+          expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/GrpHdr/InitgPty/Id/OrgId/Othr/SchmeNm/Cd', 'QUUZ')
+        end
       end
     end
 
