@@ -183,10 +183,15 @@ RSpec.describe SEPA::CreditTransfer do
 
     context 'with debtor identifier' do
       let(:scheme_nm_attributes) { {} }
+      let(:bank_account_attributes) {
+        {
+          iban: 'DE87200500001234567890',
+        }
+      }
 
       subject do
         sct = SEPA::CreditTransfer.new name: 'Schuldner GmbH',
-                                       iban: 'DE87200500001234567890',
+                                       **bank_account_attributes,
                                        bic:  'BANKDEFFXXX',
                                        debtor_identifier: 'Debtor Identifier AG',
                                        **scheme_nm_attributes
@@ -212,6 +217,19 @@ RSpec.describe SEPA::CreditTransfer do
 
         it 'should render the SchemeNm' do
           expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/GrpHdr/InitgPty/Id/OrgId/Othr/SchmeNm/Cd', 'QUUZ')
+        end
+      end
+
+      context 'when the :bank_account_type is also configured' do
+        let(:bank_account_attributes) {
+          {
+            account_number: "123456",
+            bank_account_type: 'BGNR',
+          }
+        }
+
+        it 'should render the Bankgiro code in the Swedbank style' do
+          expect(subject).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/DbtrAcct/Id/Othr/SchmeNm/Prtry', 'BGNR')
         end
       end
     end

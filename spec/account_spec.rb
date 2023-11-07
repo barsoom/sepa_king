@@ -43,4 +43,14 @@ RSpec.describe SEPA::Account do
       expect(described_class.new.initiating_party_org_id_other_scheme_name_code).to eq('CUST')
     end
   end
+
+  describe '#bank_account_type' do
+    it 'should accept valid value' do
+      expect(SEPA::DebtorAccount).to accept('BBAN', 'BGNR', nil, for: :bank_account_type)
+    end
+
+    it 'should not accept invalid value' do
+      expect(SEPA::DebtorAccount).not_to accept('', 'FOO', for: :bank_account_type)
+    end
+  end
 end

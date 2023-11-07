@@ -73,6 +73,13 @@ module SEPA
               elsif group[:account].account_number
                 builder.Othr do
                   builder.Id(group[:account].account_number)
+                  # Swedbank requirement.
+                  builder.SchmeNm do
+                    case group[:account].bank_account_type
+                    when 'BBAN' then builder.Cd('BBAN')
+                    when 'BGNR' then builder.Prtry('BGNR')
+                    end
+                  end if group[:account].bank_account_type
                 end
               end
             end
