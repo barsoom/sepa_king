@@ -88,7 +88,13 @@ module SEPA
             builder.FinInstnId do
               if group[:account].bic
                 builder.BIC(group[:account].bic)
-              else
+              end
+              if group[:account].uk_sort_code.present?
+                builder.ClrSysMmbId do
+                  builder.MmbId(group[:account].uk_sort_code)
+                end
+              end
+              if !group[:account].bic && !group[:account].uk_sort_code.present?
                 builder.Othr do
                   builder.Id('NOTPROVIDED')
                 end

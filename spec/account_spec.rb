@@ -30,6 +30,16 @@ RSpec.describe SEPA::Account do
     end
   end
 
+  describe :uk_sort_code do
+    it 'should accept valid value' do
+      expect(SEPA::Account).to accept('123456', for: :uk_sort_code)
+    end
+
+    it 'should not accept invalid value' do
+      expect(SEPA::Account).not_to accept('', '1234567', '12-34-56', for: :uk_sort_code)
+    end
+  end
+
   describe '#initiating_party_org_id_other_scheme_name_code' do
     it 'should accept valid value' do
       expect(SEPA::Account).to accept('B', 'BA', 'BAN', 'BANK', for: :initiating_party_org_id_other_scheme_name_code)

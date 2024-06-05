@@ -3,6 +3,7 @@ require 'spec_helper'
 
 RSpec.describe SEPA::CreditTransfer do
   let(:message_id_regex) { /SEPA-KING\/[0-9a-z_]{22}/ }
+  let(:bank_identifier_not_provided_xpath) { '//Document/CstmrCdtTrfInitn/PmtInf/DbtrAgt/FinInstnId/Othr/Id' }
   let(:credit_transfer) {
     SEPA::CreditTransfer.new name:       'Schuldner GmbH',
                              bic:        'BANKDEFFXXX',
@@ -258,6 +259,74 @@ RSpec.describe SEPA::CreditTransfer do
           expect {
             subject.to_xml(SEPA::PAIN_001_002_03)
           }.to raise_error(SEPA::Error, /Incompatible with schema/)
+        end
+      end
+
+      context "with UK sort code for the debtor, without BIC" do
+        subject do
+          sct = SEPA::CreditTransfer.new(
+            name:       'Schuldner GmbH',
+            account_number:       'DE87200500001234567890'
+          )
+
+          sct.add_transaction(
+            debtor_account: SEPA::DebtorAccount.new(
+              uk_sort_code: '123456',
+              bic: 'GENODEF1DTA',
+              account_number: '12345678',
+            ),
+            name:                   'Telekomiker AG',
+            bic:                    'PBNKDEFF370',
+            iban:                   'DE37112589611964645802',
+            amount:                 102.50,
+            reference:              'XYZ-1234/123',
+            remittance_information: 'Rechnung vom 22.08.2013'
+          )
+
+          sct
+        end
+
+        it 'should create valid XML file' do
+          expect(subject.to_xml(SEPA::PAIN_001_001_03)).to validate_against('pain.001.001.03.xsd')
+        end
+
+        it 'should include the sort code in the right place' do
+          expect(subject.to_xml(SEPA::PAIN_001_001_03)).to have_xml('//Document/CstmrCdtTrfInitn/PmtInf/DbtrAgt/FinInstnId/ClrSysMmbId/MmbId', '123456')
+        end
+
+        it "should not include the clause that we don't include bank identifiers" do
+          expect(subject.to_xml(SEPA::PAIN_001_001_03)).not_to have_xml(bank_identifier_not_provided_xpath)
+        end
+      end
+
+      context "when the debtor account has neither a BIC nor a UK sort code" do
+        subject do
+          sct = SEPA::CreditTransfer.new(
+            name:       'Schuldner GmbH',
+            account_number:       'DE87200500001234567890'
+          )
+
+          sct.add_transaction(
+            debtor_account: SEPA::DebtorAccount.new(
+              account_number: '12345678',
+            ),
+            name:                   'Telekomiker AG',
+            bic:                    'PBNKDEFF370',
+            iban:                   'DE37112589611964645802',
+            amount:                 102.50,
+            reference:              'XYZ-1234/123',
+            remittance_information: 'Rechnung vom 22.08.2013'
+          )
+
+          sct
+        end
+
+        it 'should create valid XML file' do
+          expect(subject.to_xml(SEPA::PAIN_001_001_03)).to validate_against('pain.001.001.03.xsd')
+        end
+
+        it 'should include the notice about no bank identifiers' do
+          expect(subject.to_xml(SEPA::PAIN_001_001_03)).to have_xml(bank_identifier_not_provided_xpath, 'NOTPROVIDED')
         end
       end
 

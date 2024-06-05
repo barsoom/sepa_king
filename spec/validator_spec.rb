@@ -115,3 +115,26 @@ RSpec.describe SEPA::MandateIdentifierValidator do
     expect(v.errors[:mandate_id]).to eq(['*** 123 seems wrong'])
   end
 end
+
+RSpec.describe SEPA::UkSortCodeValidator do
+  class Validatable
+    include ActiveModel::Model
+    attr_accessor :uk_sort_code, :usc
+    validates_with SEPA::UkSortCodeValidator, message: "%{value} seems wrong"
+    validates_with SEPA::UkSortCodeValidator, field_name: :usc
+  end
+
+  it 'should accept valid UK sort codes' do
+    expect(Validatable).to accept(nil, '123456', '654321', for: [:uk_sort_code, :usc])
+  end
+
+  it 'should not accept an invalid UK sort code' do
+    expect(Validatable).not_to accept('', '12345', '1234567', '12345a', '12 345', for: [:uk_sort_code, :usc])
+  end
+
+  it "should customize error message" do
+    v = Validatable.new(:uk_sort_code => '12345')
+    v.valid?
+    expect(v.errors[:uk_sort_code]).to eq(['12345 seems wrong'])
+  end
+end

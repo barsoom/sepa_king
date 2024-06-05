@@ -87,4 +87,18 @@ module SEPA
       end
     end
   end
+
+  class UkSortCodeValidator < ActiveModel::Validator
+    REGEX = /\A\d{6}\z/
+
+    def validate(record)
+      field_name = options[:field_name] || :uk_sort_code
+      value = record.send(field_name)
+
+      return unless value
+      return if value.to_s.match?(REGEX)
+
+      record.errors.add(field_name, :invalid, message: options[:message])
+    end
+  end
 end
