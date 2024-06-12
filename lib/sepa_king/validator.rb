@@ -95,6 +95,7 @@ module SEPA
       field_name = options[:field_name] || :uk_sort_code
       value = record.send(field_name)
 
+      # This is the only custom validator that validates an optional field.
       return unless value
       return if value.to_s.match?(REGEX)
 
