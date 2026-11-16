@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SEPA
   class CreditTransferTransaction < Transaction
     attr_accessor :service_level,

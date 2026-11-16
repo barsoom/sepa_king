@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Borrowed from rspec-rails
 # https://github.com/rspec/rspec-rails/blob/master/lib/rspec/rails/extensions/active_record/base.rb
 

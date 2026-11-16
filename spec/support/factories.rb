@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def credit_transfer_transaction(attributes={})
   { name:                   'Telekomiker AG',
     bic:                    'PBNKDEFF370',
