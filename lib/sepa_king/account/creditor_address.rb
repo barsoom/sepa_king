@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SEPA
   class CreditorAddress
     include ActiveModel::Validations

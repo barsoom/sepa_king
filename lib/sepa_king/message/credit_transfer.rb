@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SEPA
   class CreditTransfer < Message
     self.account_class = DebtorAccount

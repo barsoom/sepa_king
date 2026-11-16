@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SEPA
   class IBANValidator < ActiveModel::Validator
     # IBAN2007Identifier (taken from schema)

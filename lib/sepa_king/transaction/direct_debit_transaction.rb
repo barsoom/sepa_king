@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SEPA
   class DirectDebitTransaction < Transaction
     SEQUENCE_TYPES = %w(FRST OOFF RCUR FNAL)

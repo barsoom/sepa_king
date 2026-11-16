@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SEPA
   PAIN_008_001_02 = 'pain.008.001.02'
   PAIN_008_002_02 = 'pain.008.002.02'

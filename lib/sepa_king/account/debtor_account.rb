@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SEPA
   class DebtorAccount < Account
     attr_accessor :debtor_identifier
