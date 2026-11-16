@@ -1,4 +1,3 @@
-# encoding: utf-8
 module SEPA
   module Converter
     def convert(*attributes, options)

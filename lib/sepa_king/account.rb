@@ -1,4 +1,3 @@
-# encoding: utf-8
 module SEPA
   class Account
     include ActiveModel::Validations

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module SEPA
   class DirectDebit < Message
     self.account_class = CreditorAccount
