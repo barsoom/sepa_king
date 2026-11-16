@@ -1,4 +1,3 @@
-# encoding: utf-8
 module SEPA
   class IBANValidator < ActiveModel::Validator
     # IBAN2007Identifier (taken from schema)

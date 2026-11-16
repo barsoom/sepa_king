@@ -1,4 +1,3 @@
-# encoding: utf-8
 module SEPA
   class DirectDebitTransaction < Transaction
     SEQUENCE_TYPES = %w(FRST OOFF RCUR FNAL)

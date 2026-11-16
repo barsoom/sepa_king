@@ -1,4 +1,3 @@
-# encoding: utf-8
 module SEPA
   class DebtorAddress
     include ActiveModel::Validations
